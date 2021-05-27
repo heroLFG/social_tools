@@ -28,3 +28,6 @@ print('download done!')
 
 cmd = f'ffmpeg -i /application/downloads/{video_id}.mp4 -c copy -to {stop} -ss {start} ./clips/{video_id}_from_{start}_to_{stop}.mp4'
 os.system(cmd)
+
+cmd = f'ffmpeg -i /application/downloads/{video_id}.mp4 -vn -ac 2 ./clips/{video_id}_from_{start}_to_{stop}.mp3'
+os.system(cmd)
