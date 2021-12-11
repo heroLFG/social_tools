@@ -1,4 +1,9 @@
-# backend for social_tools
+# setup
+`make build`
+`make start`
+http://localhost:5000/
+
+## backend for social_tools
 
 - login with social
 - link social

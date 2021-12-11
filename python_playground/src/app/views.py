@@ -40,23 +40,47 @@ def index():
     <body class="bg-dark pt-5">
     '''
     if 'username' in session:
-        html += '''
-            <div class="container">
-                <form method="post" action="/clips">
-                    <h3>Generate a Clip</h3>
-                    <div class="form-group pt-2">
-                        <input name="yt-start" class="form-control" id="yt-start" placeholder="YouTube Start Link">
-                    </div>
-                    <div class="form-group">
-                        <input name="yt-stop" class="form-control" id="yt-stop" placeholder="YouTube Stop Link">
-                    </div>
-                    <div class="form-group">
-                        <input name="name" class="form-control" id="name" placeholder="Name (optional)">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-            </div>
-        '''
+        app = request.args.get('app')
+
+        if 'clip-gen' == app:
+            html += '''
+                <div class="container">
+                    <form method="post" action="/clips">
+                        <h3>Generate a Clip</h3>
+                        <div class="form-group pt-2">
+                            <input name="yt-start" class="form-control" id="yt-start" placeholder="YouTube Start Link">
+                        </div>
+                        <div class="form-group">
+                            <input name="yt-stop" class="form-control" id="yt-stop" placeholder="YouTube Stop Link">
+                        </div>
+                        <div class="form-group">
+                            <input name="name" class="form-control" id="name" placeholder="Name (optional)">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            '''
+        elif 'audio-gen' == app:
+            html += '''
+                <div class="container">
+                    <form method="post" action="/clips">
+                        <h3>Generate Audio</h3>
+                        <div class="form-group pt-2">
+                            <input name="yt-to-audio" class="form-control" id="yt-to-audio" placeholder="YouTube Link">
+                        </div>
+                        <div class="form-group">
+                            <input name="name" class="form-control" id="yt-to-audio-name" placeholder="Name (optional)">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            '''
+        else:
+            html += '''
+                <div class="container">
+                    apps
+                </div>
+            '''
 
         db = Db()
         clip_jobs = db.get_clip_jobs
@@ -104,11 +128,13 @@ def login():
             return redirect(url_for('index'))
         return redirect(url_for('index'))
 
+
 @app.route('/logout')
 def logout():
     # remove the username from the session if it's there
     session.pop('username', None)
     return redirect(url_for('index'))
+
 
 @app.route('/clips', methods=['POST'])
 def clip():
@@ -123,8 +149,10 @@ def clip():
         db.save_new_clip_job(start_link, stop_link, name)
         cmd = f'python /application/scripts/youtube/clip.py {start_link} {stop_link}'
         print(cmd)
-        subprocess.Popen(['python', '/application/scripts/youtube/clip.py', start_link, stop_link])
+        subprocess.Popen(
+            ['python', '/application/scripts/youtube/clip.py', start_link, stop_link])
         return redirect(url_for('index'))
+
 
 @app.route('/clips/<path:filename>')
 def download_file(filename):
